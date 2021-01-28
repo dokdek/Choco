@@ -67,10 +67,10 @@ client.on("message", (message) => {
     fetchReviews(message);
   }
   if (message.content === "~learn") {
-    learn(message, kanjiArray);
+    learn(message);
   }
   if (message.content === "~new") {
-    newUser(message);
+    newUser(message, kanjiArray);
   }
 });
 

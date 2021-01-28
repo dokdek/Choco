@@ -1,9 +1,10 @@
 const Discord = require("discord.js");
 const User = require("../models/user.model");
 
-const func = (message) => {const newUser = new User({
+const func = (message, kanjiArray) => {const newUser = new User({
     userId: message.author.id,
     level: 1,
+    toLearn: kanjiArray,
   })
   newUser.save()
     .then(()=>{

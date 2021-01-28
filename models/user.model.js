@@ -15,6 +15,9 @@ const serverSchema = new Schema ({
     learning: {
         type: Array,
     },
+    toLearn: {
+        type: Array,
+    },
     apprentice1: {
         type: Array,
     },
