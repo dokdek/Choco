@@ -25,6 +25,9 @@ client.once("ready", () => {
       kanji: e,
       values: kanjiJSON[e],
       reviewDate: new Date(),
+      meaningReview: false,
+      readingReview: false,
+      bothCorrect: false,
     };
     kanjiArray.push(newKanji);
   });
