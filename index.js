@@ -24,6 +24,7 @@ client.once("ready", () => {
     const newKanji = {
       kanji: e,
       values: kanjiJSON[e],
+      reviewDate: new Date(),
     };
     kanjiArray.push(newKanji);
   });
@@ -70,7 +71,7 @@ client.on("message", (message) => {
     learn(message);
   }
   if (message.content === "~new") {
-    newUser(message, kanjiArray);
+    newUser(message);
   }
 });
 
