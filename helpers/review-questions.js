@@ -17,10 +17,8 @@ const reviewQuestions = (message, user, amount) => {
     }
   } else if (user.reviews[randomIndex].meaningCorrect === true) {
     //create reading review
-    //if get review correct decrement amount correct on recursion
     reviewEmbed(message, user, randomIndex, amount, true);
   } else {
-    //create meaning review. Meaning correct is false but review correct is true.
     meaningEmbed(message, user, randomIndex, amount, true);
   }
 };
@@ -50,6 +48,7 @@ function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
           message.reply(embeddedMessage);
           if (levelIncrease) {
             //increase this kanji level here.
+            //change review time here
             amount--;
           }
           user.markModified("reviews");
@@ -101,6 +100,7 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
           message.reply(embeddedMessage);
           if (levelIncrease) {
             //increase this kanji level here.
+            //change review time here.
             amount--;
           }
           user.markModified("reviews");
