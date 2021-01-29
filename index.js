@@ -4,6 +4,7 @@ const helpMessage = require("./commands/help");
 const kanjiJSON = require("./kanji.json");
 const learn = require("./commands/learn");
 const newUser = require("./helpers/new-user");
+const fetchReviews = require("./commands/fetch-reviews");
 
 require("dotenv").config();
 

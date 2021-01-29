@@ -55,7 +55,7 @@ function learningEmbed(user, message, counter) {
         };
         msg.awaitReactions(reactFilter, { max: 1 }).then(() => {
           msg.delete();
-          user.reviews.push(user.learning[0].kanji);
+          user.reviews.push(user.learning[0]);
           user.learning.shift();
           learningEmbed(user, message, counter + 1);
         });

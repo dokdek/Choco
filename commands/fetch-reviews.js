@@ -5,7 +5,7 @@ const reviewQuestions = require("../helpers/review-questions");
 
 const fetchReviews = (message) => {
     //finds if user exists
-    User.findOne({userId: id},(err,user)=>{
+    User.findOne({userId: message.author.id},(err,user)=>{
         if(err){
             console.log(err);
             message.reply("I had an error processing that request.");
@@ -13,6 +13,7 @@ const fetchReviews = (message) => {
             if(user.reviews.length >= 5){
                 //Ask review here up to 5.
                 reviewQuestions(message, user, 5);
+                console.log("Going into reviews1")
             }else{
                 //Ask review question here up to maximum.
                 reviewQuestions(message, user, user.reviews.length);
