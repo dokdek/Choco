@@ -27,7 +27,7 @@ client.once("ready", () => {
       reviewDate: new Date(),
       meaningReview: false,
       readingReview: false,
-      bothCorrect: false,
+      oneCorrect: false,
     };
     kanjiArray.push(newKanji);
   });
