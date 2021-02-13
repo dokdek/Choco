@@ -12,36 +12,18 @@ const serverSchema = new Schema ({
     reviews:{
         type: Array,
     },
+    reviewed: {
+        type: Array,
+    },
     learning: {
         type: Array,
     },
     toLearn: {
         type: Array,
     },
-    apprentice1: {
+    learnt: {
         type: Array,
     },
-    apprentice2: {
-        type: Array
-    },
-    apprentice3: {
-        type: Array,
-    },
-    apprentice4: {
-        type: Array,
-    },
-    guru1: {
-        type: Array,
-    },
-    guru2: {
-        type: Array,
-    },
-    master: {
-        type: Array,
-    },
-    englightened: {
-        type: Array,
-    }
 }, {
     timestamps: true
 });
