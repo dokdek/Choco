@@ -1,7 +1,21 @@
 const Discord = require("discord.js");
 
+const timeInterval = [4, 8, 24, 48, 168, 336, 730, 2920];
+const levelNames = ["Apprentice 1", "Apprentice 2", "Apprentice 3", "Apprentice 4", "Guru 1", "Guru 2", "Master", "Enlightened", "Burned"];
+
 const reviewQuestions = (message, user, amount) => {
   if (amount === 0) {
+    const embeddedMessage = new Discord.MessageEmbed()
+    .setColor("#fd360b")
+    .setTitle("No reviews left.")
+    if(user.learning.length === 0 && levelChecker(user) === true){
+      user.level += 1;
+      embeddedMessage
+      .setTitle("Level up!")
+      .setDescription("You are now on level " + user.level);
+      user.save();
+    }
+    message.reply(embeddedMessage);
     return;
   }
   const randomIndex = Math.floor(Math.random() * amount);
@@ -15,7 +29,7 @@ const reviewQuestions = (message, user, amount) => {
       //create reading review
       reviewEmbed(message, user, randomIndex, amount);
     }
-  } else if (user.reviews[randomIndex].meaningCorrect === true) {
+  } else if (user.reviews[randomIndex].meaningReview === true) {
     //create reading review
     reviewEmbed(message, user, randomIndex, amount, true);
   } else {
@@ -24,7 +38,7 @@ const reviewQuestions = (message, user, amount) => {
 };
 
 function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
-  user.reviews[randomIndex];
+  let item = user.reviews[randomIndex];
   const embeddedMessage = new Discord.MessageEmbed()
     .setColor("#fd360b")
     .setTitle(user.reviews[randomIndex].kanji)
@@ -45,16 +59,36 @@ function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
           user.reviews[randomIndex].oneCorrect = true;
           msg.delete();
           embeddedMessage.setTitle("Correct!").setDescription("");
-          message.reply(embeddedMessage);
           if (levelIncrease) {
-            //increase this kanji level here.
-            //change review time here
+            item.level += 1;
             amount--;
+            item.oneCorrect = false;
+            item.readingReview = false;
+            item.meaningReview = false;
+            if (item.level === 9) {
+              //move to learnt/burned
+            } else {
+              let reviewDate = new Date()
+              reviewDate.setHours(reviewDate.getHours() + timeInterval[item.level - 1]);
+              item.reviewDate = reviewDate;
+              user.reviewed.push(item);
+              user.reviews.splice(randomIndex, 1);
+            }
+            embeddedMessage
+            .setDescription("Proficiency: " + levelNames[item.level - 1])
+            .addFields(
+              {
+                name: "Next Review",
+                value: item.reviewDate,
+              },);
           }
+          message.reply(embeddedMessage);
           user.markModified("reviews");
           user.save().then(() => reviewQuestions(message, user, amount));
         } else {
-          //reduce level by 1???
+          if (item.level > 0) {
+            item.level -= 1;
+          }
           msg.delete();
           embeddedMessage
             .setTitle(user.reviews[randomIndex].kanji)
@@ -73,10 +107,10 @@ function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
 }
 
 function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
-  user.reviews[randomIndex];
+  let item = user.reviews[randomIndex];
   const embeddedMessage = new Discord.MessageEmbed()
     .setColor("#fd360b")
-    .setTitle(user.reviews[randomIndex].kanji)
+    .setTitle(item.kanji)
     .setDescription("");
   embeddedMessage.setDescription("What is the reading of the above?");
   message.reply(embeddedMessage).then((msg) => {
@@ -89,24 +123,44 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
           collected.first().content.trim()
         );
         if (
-          user.reviews[randomIndex].values.wk_readings_on.includes(response) ||
-          user.reviews[randomIndex].values.wk_readings_kun.includes(response)
+          item.values.wk_readings_on.includes(response) ||
+          item.values.wk_readings_kun.includes(response)
         ) {
           //Meaning complete, one crrect
-          user.reviews[randomIndex].readingReview = true;
-          user.reviews[randomIndex].oneCorrect = true;
+          item.readingReview = true;
+          item.oneCorrect = true;
           msg.delete();
           embeddedMessage.setTitle("Correct!").setDescription("");
-          message.reply(embeddedMessage);
           if (levelIncrease) {
-            //increase this kanji level here.
-            //change review time here.
+            item.level += 1;
             amount--;
+            item.oneCorrect = false;
+            item.readingReview = false;
+            item.meaningReview = false;
+            if (item.level === 9) {
+              //move to learnt/burned
+            } else {
+              let reviewDate = new Date()
+              reviewDate.setHours(reviewDate.getHours() + timeInterval[item.level - 1]);
+              item.reviewDate = reviewDate;
+              user.reviewed.push(item);
+              user.reviews.splice(randomIndex, 1);
+            }
+            embeddedMessage
+            .setDescription("Proficiency: " + levelNames[item.level - 1])
+            .addFields(
+              {
+                name: "Next Review",
+                value: item.reviewDate,
+              },);
           }
+          message.reply(embeddedMessage);
           user.markModified("reviews");
           user.save().then(() => reviewQuestions(message, user, amount));
         } else {
-          //reduce level by 1???
+            if (item.level > 0) {
+              item.level -= 1;
+            }
           msg.delete();
           embeddedMessage
             .setTitle(user.reviews[randomIndex].kanji)
@@ -138,6 +192,21 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
 
 function capitalizeFirstLetter(string) {
   return string[0].toUpperCase() + string.slice(1).toLowerCase();
+}
+
+function levelChecker(user){
+  const userLevel = user.level;
+  const levelArray = user.reviewed.map((e)=>{
+    if(e.values.wk_level === userLevel){
+      return e;
+    }
+  });
+  for(let i = 0; i < levelArray.length; i++){
+    if(levelArray[i].level < 5){
+      return false;
+    }
+  }
+  return true;
 }
 
 module.exports = reviewQuestions;
