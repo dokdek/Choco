@@ -13,7 +13,7 @@ const learningPrompt = (user, message) => {
       }
     }
   }
-  user.save().then(()=>   learningEmbed(user, message, 1));
+  user.save().then(() => learningEmbed(user, message, 1));
 };
 
 function learningEmbed(user, message, counter) {
