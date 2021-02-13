@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const mongoose = require("mongoose");
+const User = require("./models/user.model");
 const helpMessage = require("./commands/help");
 const kanjiJSON = require("./kanji.json");
 const learn = require("./commands/learn");
@@ -29,6 +30,7 @@ client.once("ready", () => {
       meaningReview: false,
       readingReview: false,
       oneCorrect: false,
+      level: 0,
     };
     kanjiArray.push(newKanji);
   });
@@ -39,44 +41,60 @@ client.on("message", (message) => {
     message.reply("I only work in DMs~");
     return;
   }
-  /*if(message.content.startsWith("~") && createNewUser){
-      console.log("Creating new user");
-      const newUser = new User({
-        userId: message.author.id,
-        review: [],
-        apprentice1: [],
-        apprentice2: [],
-        apprentice3: [],
-        apprentice4: [],
-        guru1: [],
-        guru2: [],
-        master: [],
-        enlightened: [],
-      })
-      newUser.save()
-        .then(()=>{
-          const embeddedGreeting = new Discord.MessageEmbed()
-          .setColor("#fd360b")
-          .setTitle("New User Dectected!")
-          .setDescription(
-            "It seems you are not in my database, I have created a profile for you. Good luck learning~!"
-          );
-          message.reply(embeddedGreeting);
-        })
-        .catch((err)=>console.log(err));
-    }*/
   if (message.content === "~help") {
     helpMessage(message);
   }
   if (message.content === "~review") {
-    fetchReviews(message);
+    fetchReviews(message, kanjiArray);
   }
   if (message.content === "~learn") {
-    learn(message);
+    learn(message, kanjiArray);
   }
   if (message.content === "~new") {
     newUser(message, kanjiArray);
   }
 });
+
+function reviewChecker() {
+  console.log("Checking reviews.");
+  const currDate = new Date();
+  let reviewAmount = 0;
+  let newReviews = false;
+  User.find({}, (err, users) => {
+    if (err) {
+      console.log("Error in reviewChecker");
+    } else {
+      users.forEach((user) => {
+        user.reviewed.forEach((e) => {
+          if (currDate > e.reviewDate) {
+            console.log("Review found");
+            newReviews = true;
+            reviewAmount++;
+            user.reviews.push(e);
+            user.reviewed.shift();
+          }
+        });
+        if (newReviews === true) {
+          console.log("Sending review reminder to");
+          console.log(user.userId);
+          const embeddedMessage = new Discord.MessageEmbed()
+            .setColor("#fd360b")
+            .setTitle("Reviews available!")
+            .setDescription(
+              "You have " +
+                reviewAmount +
+                " reviews available. Use ~review to commence them now."
+            )
+            .setFooter("Updated on " + new Date());
+          client.users.fetch(user.userId).send(embeddedMessage);
+          newReviews = false;
+          reviewAmount = 0;
+        }
+      });
+    }
+  });
+}
+
+setInterval(reviewChecker, 60 * 60 * 1000);
 
 client.login(process.env.TOKEN);
