@@ -17,7 +17,7 @@ const learningPrompt = (user, message) => {
 };
 
 function learningEmbed(user, message, counter) {
-  if (user.learning.length === 0 || counter === 6) {
+  if (counter === 6) {
     const embeddedCompletionMsg = new Discord.MessageEmbed()
       .setColor("#fd360b")
       .setDescription(
@@ -26,7 +26,14 @@ function learningEmbed(user, message, counter) {
     user.save().then(() => {
       message.reply(embeddedCompletionMsg);
     });
-  } else if (counter <= 5) {
+  }else if(user.learning.length === 0){
+    const embeddedCompletionMsg = new Discord.MessageEmbed()
+    .setColor("#fd360b")
+    .setDescription(
+      "You have learned everything in your level. Continue reviewing until Guru 1 proficiency on all kanji to unlock the next level"
+    );
+  }
+   else if (counter <= 5) {
     const embeddedMessage = new Discord.MessageEmbed().setColor("#fd360b");
     embeddedMessage
       .setTitle(user.learning[0].kanji)
