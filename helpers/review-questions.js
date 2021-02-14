@@ -5,9 +5,13 @@ const levelNames = ["Apprentice 1", "Apprentice 2", "Apprentice 3", "Apprentice 
 
 const reviewQuestions = (message, user, amount) => {
   if (amount === 0) {
+    const reviewMessage = user.review.length + " reviews left.";
+    if(user.reviews.length === 1){
+      reviewMessage = "1 review left."
+    }
     const embeddedMessage = new Discord.MessageEmbed()
     .setColor("#fd360b")
-    .setTitle("No reviews left.")
+    .setTitle(reviewMessage);
     if(user.learning.length === 0 && levelChecker(user) === true){
       user.level += 1;
       user.reminded = 0;
