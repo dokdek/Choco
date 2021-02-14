@@ -10,6 +10,7 @@ const reviewQuestions = (message, user, amount) => {
     .setTitle("No reviews left.")
     if(user.learning.length === 0 && levelChecker(user) === true){
       user.level += 1;
+      user.reminded = 0;
       embeddedMessage
       .setTitle("Level up!")
       .setDescription("You are now on level " + user.level);

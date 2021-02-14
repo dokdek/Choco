@@ -74,7 +74,7 @@ function reviewChecker() {
             user.reviewed.shift();
           }
         });
-        if (newReviews === true) {
+        if (newReviews === true && user.reminded != reviewAmount) {
           console.log("Sending review reminder to");
           console.log(user.userId);
           const embeddedMessage = new Discord.MessageEmbed()
@@ -86,6 +86,8 @@ function reviewChecker() {
                 " reviews available. Use ~review to commence them now."
             )
             .setFooter("Updated on " + new Date());
+            user.reminded = reviewAmount;
+            user.save();
           client.users.fetch(user.userId)
           .then((user)=>{
             user.send(embeddedMessage);
@@ -98,14 +100,6 @@ function reviewChecker() {
   });
 }
 
-function testSend(){
-  client.users.fetch("95652393978433536")
-          .then((user)=>{
-            user.send("hello");
-          });
-}
-
 setInterval(reviewChecker, 60 * 60 * 1000);
-setInterval(testSend, 60 * 60);
 
 client.login(process.env.TOKEN);
