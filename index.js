@@ -34,6 +34,7 @@ client.once("ready", () => {
     };
     kanjiArray.push(newKanji);
   });
+  setInterval(reviewChecker, 60 * 60 * 1000);
 });
 
 client.on("message", (message) => {
@@ -65,15 +66,16 @@ function reviewChecker() {
       console.log("Error in reviewChecker");
     } else {
       users.forEach((user) => {
-        user.reviewed.forEach((e) => {
-          if (currDate > e.reviewDate) {
+        for(let i = 0; i < user.reviewed.length; i++){
+          if(currDate > user.reviewed[i].reviewDate){
             console.log("Review found");
             newReviews = true;
             reviewAmount++;
-            user.reviews.push(e);
-            user.reviewed.shift();
+            user.reviews.push(user.reviewed[i])
+            user.reviewed.splice(i, 1);
+            i--;
           }
-        });
+        }
         if (newReviews === true && user.reminded != reviewAmount) {
           console.log("Sending review reminder to");
           console.log(user.userId);
@@ -87,11 +89,14 @@ function reviewChecker() {
             )
             .setFooter("Updated on " + new Date());
             user.reminded = reviewAmount;
-            user.save();
-          client.users.fetch(user.userId)
-          .then((user)=>{
-            user.send(embeddedMessage);
-          });
+            user.markModified("reviewed");
+            user.save()
+            .then(()=>{
+              client.users.fetch(user.userId)
+              .then((user)=>{
+                user.send(embeddedMessage);
+              });
+            })
           newReviews = false;
           reviewAmount = 0;
         }
@@ -100,6 +105,21 @@ function reviewChecker() {
   });
 }
 
-setInterval(reviewChecker, 60 * 60 * 1000);
+function mover(){
+  console.log("moving back to reviewed");
+  User.find({},(err, users)=>{
+    if (err) {
+      console.log("Error in reviewChecker");
+    } else {
+      users.forEach((user) => {
+        const temp = user.reviews;
+        user.reviewed = temp.concat(user.reviewed);
+        user.reviews = [];
+        user.markModified("reviews");
+        user.save();
+      });
+    }
+  })
+}
 
 client.login(process.env.TOKEN);
