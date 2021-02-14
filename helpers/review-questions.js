@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 
 const timeInterval = [4, 8, 24, 48, 168, 336, 730, 2920];
+const humanTimeInterval = ["4 hours", "8 hours","1 day","2 days","1 week", "2 weeks","1 month", "4 months", ""];
 const levelNames = ["Apprentice 1", "Apprentice 2", "Apprentice 3", "Apprentice 4", "Guru 1", "Guru 2", "Master", "Enlightened", "Burned"];
 
 const reviewQuestions = (message, user, amount) => {
@@ -47,8 +48,8 @@ function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
   const embeddedMessage = new Discord.MessageEmbed()
     .setColor("#fd360b")
     .setTitle(user.reviews[randomIndex].kanji)
-    .setDescription("");
-  embeddedMessage.setDescription("What is the meaning of the above?");
+    .setDescription("What is the **meaning** of the above?")
+    .setFooter("**Meaning** | Level: " + item.values.wk_level);
   message.reply(embeddedMessage).then((msg) => {
     const msgFilter = (m) =>
       m.content.length > 0 && m.author.id === user.userId;
@@ -63,7 +64,7 @@ function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
           user.reviews[randomIndex].meaningReview = true;
           user.reviews[randomIndex].oneCorrect = true;
           msg.delete();
-          embeddedMessage.setTitle("Correct!").setDescription("");
+          embeddedMessage.setTitle("Correct!").setDescription("").setColor("#00FF00");
           if (levelIncrease) {
             item.level += 1;
             amount--;
@@ -80,11 +81,15 @@ function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
               user.reviews.splice(randomIndex, 1);
             }
             embeddedMessage
-            .setDescription("Proficiency: " + levelNames[item.level - 1])
+            .setDescription(item.kanji)
             .addFields(
               {
+                name: "Proficiency",
+                value: levelNames[item.level - 1],
+              },
+              {
                 name: "Next Review",
-                value: item.reviewDate,
+                value: item.reviewDate + "\n" + humanTimeInterval[item.level - 1],
               },);
           }
           message.reply(embeddedMessage);
@@ -116,8 +121,8 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
   const embeddedMessage = new Discord.MessageEmbed()
     .setColor("#fd360b")
     .setTitle(item.kanji)
-    .setDescription("");
-  embeddedMessage.setDescription("What is the reading of the above?");
+    .setDescription("What is the **reading** of the above?")
+    .setFooter("**Reading** | Level: " + item.values.wk_level);
   message.reply(embeddedMessage).then((msg) => {
     const msgFilter = (m) =>
       m.content.length > 0 && m.author.id === user.userId;
@@ -135,7 +140,7 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
           item.readingReview = true;
           item.oneCorrect = true;
           msg.delete();
-          embeddedMessage.setTitle("Correct!").setDescription("");
+          embeddedMessage.setTitle("Correct!").setDescription("").setColor("#00FF00");
           if (levelIncrease) {
             item.level += 1;
             amount--;
@@ -152,11 +157,15 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
               user.reviews.splice(randomIndex, 1);
             }
             embeddedMessage
-            .setDescription("Proficiency: " + levelNames[item.level - 1])
+            .setDescription(item.kanji)
             .addFields(
               {
+                name: "Proficiency",
+                value: levelNames[item.level - 1],
+              },
+              {
                 name: "Next Review",
-                value: item.reviewDate,
+                value: item.reviewDate + "\n" + humanTimeInterval[item.level - 1],
               },);
           }
           message.reply(embeddedMessage);
