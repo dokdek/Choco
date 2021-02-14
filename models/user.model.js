@@ -24,6 +24,9 @@ const serverSchema = new Schema ({
     learnt: {
         type: Array,
     },
+    reminded: {
+        type: Number,
+    },
 }, {
     timestamps: true
 });
