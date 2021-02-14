@@ -86,7 +86,10 @@ function reviewChecker() {
                 " reviews available. Use ~review to commence them now."
             )
             .setFooter("Updated on " + new Date());
-          client.users.fetch(user.userId).send(embeddedMessage);
+          client.users.fetch(user.userId)
+          .then((user)=>{
+            user.send(embeddedMessage);
+          });
           newReviews = false;
           reviewAmount = 0;
         }
@@ -95,6 +98,14 @@ function reviewChecker() {
   });
 }
 
+function testSend(){
+  client.users.fetch("95652393978433536")
+          .then((user)=>{
+            user.send("hello");
+          });
+}
+
 setInterval(reviewChecker, 60 * 60 * 1000);
+setInterval(testSend, 60 * 60);
 
 client.login(process.env.TOKEN);
