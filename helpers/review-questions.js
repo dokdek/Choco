@@ -49,7 +49,7 @@ function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
     .setColor("#fd360b")
     .setTitle(user.reviews[randomIndex].kanji)
     .setDescription("What is the **meaning** of the above?")
-    .setFooter("**Meaning** | Level: " + item.values.wk_level);
+    .setFooter("Meaning | Level: " + item.values.wk_level);
   message.reply(embeddedMessage).then((msg) => {
     const msgFilter = (m) =>
       m.content.length > 0 && m.author.id === user.userId;
@@ -89,7 +89,7 @@ function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
               },
               {
                 name: "Next Review",
-                value: item.reviewDate + "\n" + humanTimeInterval[item.level - 1],
+                value: item.reviewDate + "\n" + "In " + humanTimeInterval[item.level - 1],
               },);
           }
           message.reply(embeddedMessage);
@@ -122,7 +122,7 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
     .setColor("#fd360b")
     .setTitle(item.kanji)
     .setDescription("What is the **reading** of the above?")
-    .setFooter("**Reading** | Level: " + item.values.wk_level);
+    .setFooter("Reading | Level: " + item.values.wk_level);
   message.reply(embeddedMessage).then((msg) => {
     const msgFilter = (m) =>
       m.content.length > 0 && m.author.id === user.userId;
@@ -165,7 +165,7 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
               },
               {
                 name: "Next Review",
-                value: item.reviewDate + "\n" + humanTimeInterval[item.level - 1],
+                value: item.reviewDate + "\n" + "In " + humanTimeInterval[item.level - 1],
               },);
           }
           message.reply(embeddedMessage);
