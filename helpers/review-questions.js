@@ -6,7 +6,7 @@ const levelNames = ["Apprentice 1", "Apprentice 2", "Apprentice 3", "Apprentice 
 
 const reviewQuestions = (message, user, amount) => {
   if (amount === 0) {
-    const reviewMessage = user.review.length + " reviews left.";
+    const reviewMessage = user.reviews.length + " reviews left.";
     if(user.reviews.length === 1){
       reviewMessage = "1 review left."
     }
