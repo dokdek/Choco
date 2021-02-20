@@ -68,10 +68,10 @@ client.on("message", (message) => {
     helpMessage(message);
   }
   if (message.content === "~review") {
-    fetchReviews(message, kanjiArray);
+    fetchReviews(message, kanjiArray, vocabArray);
   }
   if (message.content === "~learn") {
-    learn(message, kanjiArray);
+    learn(message, kanjiArray, vocabArray);
   }
   if (message.content === "~new") {
     newUser(message, kanjiArray, vocabArray);

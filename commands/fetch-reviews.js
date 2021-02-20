@@ -3,7 +3,7 @@ const User = require("../models/user.model");
 const newUser = require("../helpers/new-user");
 const reviewQuestions = require("../helpers/review-questions");
 
-const fetchReviews = (message, kanjiArray) => {
+const fetchReviews = (message, kanjiArray, vocabArray) => {
     //finds if user exists
     User.findOne({userId: message.author.id},(err,user)=>{
         if(err){
@@ -19,7 +19,7 @@ const fetchReviews = (message, kanjiArray) => {
                 reviewQuestions(message, user, user.reviews.length);
             }
         }else{
-            newUser(message, kanjiArray);
+            newUser(message, kanjiArray, vocabArray);
         }
       })
 }

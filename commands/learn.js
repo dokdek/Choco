@@ -2,7 +2,7 @@ const learningPrompt = require("../helpers/learning-prompt");
 const User = require("../models/user.model");
 const newUser = require("../helpers/new-user");
 
-const learn = (message, kanjiArray) => {
+const learn = (message, kanjiArray, vocabArray) => {
   User.findOne({ userId: message.author.id }, (err, user) => {
     if (err) {
       console.log(err);
@@ -10,7 +10,7 @@ const learn = (message, kanjiArray) => {
     } else if (user) {
       learningPrompt(user, message);
     } else {
-      newUser(message, kanjiArray);
+      newUser(message, kanjiArray, vocabArray);
     }
   });
 };
