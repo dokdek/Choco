@@ -6,13 +6,16 @@ const kanjiJSON = require("./kanji.json");
 const learn = require("./commands/learn");
 const newUser = require("./helpers/new-user");
 const fetchReviews = require("./commands/fetch-reviews");
+const vocabJSON = require("./vocab.json");
 
 require("dotenv").config();
 
 const client = new Discord.Client();
 const uri = process.env.ATLAS_URI;
 const connection = mongoose.connection;
+
 let kanjiArray = [];
+let vocabArray = [];
 
 mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true });
 connection.once("open", () => {
@@ -20,8 +23,10 @@ connection.once("open", () => {
 });
 
 client.once("ready", () => {
+  
   console.log("Bot ready!");
   client.user.setActivity("Under Development");
+
   Object.keys(kanjiJSON).forEach((e) => {
     const newKanji = {
       kanji: e,
@@ -34,6 +39,21 @@ client.once("ready", () => {
     };
     kanjiArray.push(newKanji);
   });
+
+  vocabJSON.forEach((e)=>{
+    const newVocab = {
+      kanji: e.vocab,
+      wk_level: e.wk_level,
+      meanings: e.meanings,
+      readings: e.readings,
+      level: 0,
+      oneCorrect: false,
+      reviewDate: new Date(),
+      meaningReview: false,
+      readingReview: false,
+    }
+    vocabArray.push(newVocab);
+  })
   setInterval(reviewChecker, 60 * 60 * 1000);
 });
 
