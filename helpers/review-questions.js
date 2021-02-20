@@ -1,24 +1,54 @@
 const Discord = require("discord.js");
 
 const timeInterval = [4, 8, 24, 48, 168, 336, 730, 2920];
-const humanTimeInterval = ["4 hours", "8 hours","1 day","2 days","1 week", "2 weeks","1 month", "4 months", ""];
-const levelNames = ["Apprentice 1", "Apprentice 2", "Apprentice 3", "Apprentice 4", "Guru 1", "Guru 2", "Master", "Enlightened", "Burned"];
+const humanTimeInterval = [
+  "4 hours",
+  "8 hours",
+  "1 day",
+  "2 days",
+  "1 week",
+  "2 weeks",
+  "1 month",
+  "4 months",
+  "",
+];
+const levelNames = [
+  "Apprentice 1",
+  "Apprentice 2",
+  "Apprentice 3",
+  "Apprentice 4",
+  "Guru 1",
+  "Guru 2",
+  "Master",
+  "Enlightened",
+  "Burned",
+];
 
 const reviewQuestions = (message, user, amount) => {
   if (amount === 0) {
     const reviewMessage = user.reviews.length + " reviews left.";
-    if(user.reviews.length === 1){
-      reviewMessage = "1 review left."
+    if (user.reviews.length === 1) {
+      reviewMessage = "1 review left.";
     }
     const embeddedMessage = new Discord.MessageEmbed()
-    .setColor("#fd360b")
-    .setTitle(reviewMessage);
-    if(user.learning.length === 0 && levelChecker(user) === true){
+      .setColor("#fd360b")
+      .setTitle(reviewMessage);
+    if (user.learning.length === 0 && levelChecker(user) === true) {
+      //move vocab to learning here.
+      let hasLearning = true;
+      while (hasLearning) {
+        if (user.vocabToLearn[0].wk_level === user.level) {
+          user.learning.push(user.vocabToLearn[0]);
+          user.vocabToLearn.shift();
+        } else {
+          hasLearning = false;
+        }
+      }
       user.level += 1;
       user.reminded = 0;
       embeddedMessage
-      .setTitle("Level up!")
-      .setDescription("You are now on level " + user.level);
+        .setTitle("Level up!")
+        .setDescription("You are now on level " + user.level);
       user.save();
     }
     message.reply(embeddedMessage);
@@ -64,7 +94,10 @@ function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
           user.reviews[randomIndex].meaningReview = true;
           user.reviews[randomIndex].oneCorrect = true;
           msg.delete();
-          embeddedMessage.setTitle("Correct!").setDescription("").setColor("#00FF00");
+          embeddedMessage
+            .setTitle("Correct!")
+            .setDescription("")
+            .setColor("#00FF00");
           if (levelIncrease) {
             item.level += 1;
             amount--;
@@ -74,23 +107,28 @@ function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
             if (item.level === 9) {
               //move to learnt/burned
             } else {
-              let reviewDate = new Date()
-              reviewDate.setHours(reviewDate.getHours() + timeInterval[item.level - 1]);
+              let reviewDate = new Date();
+              reviewDate.setHours(
+                reviewDate.getHours() + timeInterval[item.level - 1]
+              );
               item.reviewDate = reviewDate;
               user.reviewed.push(item);
               user.reviews.splice(randomIndex, 1);
             }
-            embeddedMessage
-            .setDescription(item.kanji)
-            .addFields(
+            embeddedMessage.setDescription(item.kanji).addFields(
               {
                 name: "Proficiency",
                 value: levelNames[item.level - 1],
               },
               {
                 name: "Next Review",
-                value: item.reviewDate + "\n" + "In " + humanTimeInterval[item.level - 1],
-              },);
+                value:
+                  item.reviewDate +
+                  "\n" +
+                  "In " +
+                  humanTimeInterval[item.level - 1],
+              }
+            );
           }
           message.reply(embeddedMessage);
           user.markModified("reviews");
@@ -140,7 +178,10 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
           item.readingReview = true;
           item.oneCorrect = true;
           msg.delete();
-          embeddedMessage.setTitle("Correct!").setDescription("").setColor("#00FF00");
+          embeddedMessage
+            .setTitle("Correct!")
+            .setDescription("")
+            .setColor("#00FF00");
           if (levelIncrease) {
             item.level += 1;
             amount--;
@@ -150,31 +191,36 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
             if (item.level === 9) {
               //move to learnt/burned
             } else {
-              let reviewDate = new Date()
-              reviewDate.setHours(reviewDate.getHours() + timeInterval[item.level - 1]);
+              let reviewDate = new Date();
+              reviewDate.setHours(
+                reviewDate.getHours() + timeInterval[item.level - 1]
+              );
               item.reviewDate = reviewDate;
               user.reviewed.push(item);
               user.reviews.splice(randomIndex, 1);
             }
-            embeddedMessage
-            .setDescription(item.kanji)
-            .addFields(
+            embeddedMessage.setDescription(item.kanji).addFields(
               {
                 name: "Proficiency",
                 value: levelNames[item.level - 1],
               },
               {
                 name: "Next Review",
-                value: item.reviewDate + "\n" + "In " + humanTimeInterval[item.level - 1],
-              },);
+                value:
+                  item.reviewDate +
+                  "\n" +
+                  "In " +
+                  humanTimeInterval[item.level - 1],
+              }
+            );
           }
           message.reply(embeddedMessage);
           user.markModified("reviews");
           user.save().then(() => reviewQuestions(message, user, amount));
         } else {
-            if (item.level > 0) {
-              item.level -= 1;
-            }
+          if (item.level > 0) {
+            item.level -= 1;
+          }
           msg.delete();
           embeddedMessage
             .setTitle(user.reviews[randomIndex].kanji)
@@ -208,15 +254,15 @@ function capitalizeFirstLetter(string) {
   return string[0].toUpperCase() + string.slice(1).toLowerCase();
 }
 
-function levelChecker(user){
+function levelChecker(user) {
   const userLevel = user.level;
-  const levelArray = user.reviewed.map((e)=>{
-    if(e.values.wk_level === userLevel){
+  const levelArray = user.reviewed.map((e) => {
+    if (e.values.wk_level === userLevel) {
       return e;
     }
   });
-  for(let i = 0; i < levelArray.length; i++){
-    if(levelArray[i].level < 5){
+  for (let i = 0; i < levelArray.length; i++) {
+    if (levelArray[i].level < 5) {
       return false;
     }
   }
