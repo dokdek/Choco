@@ -23,7 +23,7 @@ connection.once("open", () => {
 });
 
 client.once("ready", () => {
-  
+
   console.log("Bot ready!");
   client.user.setActivity("Under Development");
 
@@ -36,6 +36,7 @@ client.once("ready", () => {
       readingReview: false,
       oneCorrect: false,
       level: 0,
+      type: "kanji"
     };
     kanjiArray.push(newKanji);
   });
@@ -51,6 +52,7 @@ client.once("ready", () => {
       reviewDate: new Date(),
       meaningReview: false,
       readingReview: false,
+      type: "vocab"
     }
     vocabArray.push(newVocab);
   })
