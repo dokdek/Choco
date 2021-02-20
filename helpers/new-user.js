@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const User = require("../models/user.model");
 
-const func = (message, kanjiArray) => {
+const func = (message, kanjiArray, vocabArray) => {
   User.findOne({ userId: message.author.id }, (err, user) => {
     if (err) {
       message.reply("I encountered an error.");
@@ -16,6 +16,7 @@ const func = (message, kanjiArray) => {
         userId: message.author.id,
         level: 1,
         toLearn: kanjiArray,
+        vocabToLearn: vocabArray,
       });
       newUser
         .save()
