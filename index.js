@@ -74,7 +74,7 @@ client.on("message", (message) => {
     learn(message, kanjiArray);
   }
   if (message.content === "~new") {
-    newUser(message, kanjiArray);
+    newUser(message, kanjiArray, vocabArray);
   }
 });
 
