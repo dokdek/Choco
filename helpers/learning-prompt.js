@@ -26,35 +26,48 @@ function learningEmbed(user, message, counter) {
     user.save().then(() => {
       message.reply(embeddedCompletionMsg);
     });
-  }else if(user.learning.length === 0){
+  } else if (user.learning.length === 0) {
     const embeddedCompletionMsg = new Discord.MessageEmbed()
-    .setColor("#fd360b")
-    .setDescription(
-      "You have learned everything in your level. Continue reviewing until Guru 1 proficiency on all kanji to unlock the next level"
-    );
-  }
-   else if (counter <= 5) {
-    const embeddedMessage = new Discord.MessageEmbed().setColor("#fd360b");
-    embeddedMessage
-      .setTitle(user.learning[0].kanji)
+      .setColor("#fd360b")
+      .setDescription(
+        "You have learned everything in your level. Continue reviewing until Guru 1 proficiency on all kanji to unlock the next level"
+      );
+  } else if (counter <= 5) {
+    const embeddedMessage = new Discord.MessageEmbed().setTitle(user.learning[0].kanji);
+    if (user.learning[0].type === "Kanji") {
+      embeddedMessage
+      .setColor("#f6a0dad")
+        .addFields(
+          { name: "Meanings", value: user.learning[0].values.wk_meanings },
+          {
+            name: "Kunyomi Readings",
+            value:
+              user.learning[0].values.wk_readings_kun.length === 0
+                ? "None"
+                : user.learning[0].values.wk_readings_kun,
+          },
+          {
+            name: "Onyomi Readings",
+            value:
+              user.learning[0].values.wk_readings_on.length === 0
+                ? "None"
+                : user.learning[0].values.wk_readings_on,
+          }
+        )
+        .setFooter(user.learning[0].type + " | " + "Level: " + user.learning[0].values.wk_level);
+    }else if (user.learning[0].type === "Vocab"){
+      embeddedMessage
+      .setColor("#29c2ef")
       .addFields(
-        { name: "Meaning", value: user.learning[0].values.wk_meanings },
+        { name: "Meanings", value: user.learning[0].meanings },
         {
-          name: "Kunyomi Readings",
+          name: "Readings",
           value:
-            user.learning[0].values.wk_readings_kun.length === 0
-              ? "None"
-              : user.learning[0].values.wk_readings_kun,
+            user.learning[0].readings
         },
-        {
-          name: "Onyomi Readings",
-          value:
-            user.learning[0].values.wk_readings_on.length === 0
-              ? "None"
-              : user.learning[0].values.wk_readings_on,
-        }
       )
-      .setFooter("Level: " + user.learning[0].values.wk_level);
+      .setFooter(user.learning[0].type + " | " + "Level: " + user.learning[0].wk_level);
+    }
     message.reply(embeddedMessage).then((msg) => {
       msg.react("➡️").then(() => {
         const reactFilter = (reaction, user) => {
