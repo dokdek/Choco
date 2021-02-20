@@ -21,6 +21,9 @@ const serverSchema = new Schema ({
     toLearn: {
         type: Array,
     },
+    vocabToLearn:{
+        type: Array,
+    },
     learnt: {
         type: Array,
     },
