@@ -32,6 +32,9 @@ function learningEmbed(user, message, counter) {
       .setDescription(
         "You have learned everything in your level. Continue reviewing until Guru 1 proficiency on all kanji to unlock the next level"
       );
+      user.save().then(() => {
+        message.reply(embeddedCompletionMsg);
+      });
   } else if (counter <= 5) {
     const embeddedMessage = new Discord.MessageEmbed().setTitle(user.learning[0].kanji);
     if (user.learning[0].type === "Kanji") {
