@@ -33,7 +33,8 @@ const reviewQuestions = (message, user, amount) => {
     const embeddedMessage = new Discord.MessageEmbed()
       .setColor("#fd360b")
       .setTitle(reviewMessage);
-    if (user.learning.length === 0 && levelChecker(user) === true) {
+    //change below, cannot check length, since sometimes vocab will be there. Extract to new function
+    if (kanjiLearningLength(user) === 0 && levelChecker(user) === true) {
       //move vocab to learning here.
       let hasLearning = true;
       while (hasLearning) {
@@ -76,27 +77,48 @@ const reviewQuestions = (message, user, amount) => {
 function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
   let item = user.reviews[randomIndex];
   const embeddedMessage = new Discord.MessageEmbed()
-    .setColor("#fd360b")
-    .setTitle(user.reviews[randomIndex].kanji)
-    .setDescription("What is the **meaning** of the above?")
-    .setFooter("Meaning | Level: " + item.values.wk_level);
+    .setTitle(item.kanji)
+    .setDescription("What is the **meaning** of the above?");
+  //change embed msg below for vocab
+  if (item.type === "Kanji") {
+    embeddedMessage
+      .setColor("#f6a0dad")
+      .setFooter(
+        item.type + " | Meaning | " + "Level: " + item.values.wk_level
+      );
+  } else if (item.type === "Vocab") {
+    embeddedMessage
+      .setColor("#29c2ef")
+      .setFooter(
+        item.type + " | Meaning | " + "Level: " + item.values.wk_level
+      );
+  }
   message.reply(embeddedMessage).then((msg) => {
     const msgFilter = (m) =>
       m.content.length > 0 && m.author.id === user.userId;
     msg.channel
       .awaitMessages(msgFilter, { max: 1 })
       .then((collected) => {
-        const response = capitalizeFirstLetter(
-          collected.first().content.trim()
-        );
-        if (user.reviews[randomIndex].values.wk_meanings.includes(response)) {
+        //Change below for vocab, need change response, and change checker. The rest can stay.
+        let response;
+        let acceptedAnswers;
+        if (item.type === "Kanji") {
+          //captilizes first letter of response as all kanji meanings are capitalized
+          response = capitalizeFirstLetter(collected.first().content.trim());
+          acceptedAnswers = item.values.wk_meanings;
+          //lowercases response as most vocab are in lowercase
+        } else if (item.type === "Vocab") {
+          response = collected.first().content.toLowerCase().trim();
+          acceptedAnswers = item.meanings;
+        }
+        if (acceptedAnswers.includes(response)) {
           //Meaning complete, one crrect
           user.reviews[randomIndex].meaningReview = true;
           user.reviews[randomIndex].oneCorrect = true;
           msg.delete();
           embeddedMessage
             .setTitle("Correct!")
-            .setDescription("")
+            .setDescription(item.kanji)
             .setColor("#00FF00");
           if (levelIncrease) {
             item.level += 1;
@@ -138,12 +160,13 @@ function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
             item.level -= 1;
           }
           msg.delete();
+          //change embed for vocab
           embeddedMessage
-            .setTitle(user.reviews[randomIndex].kanji)
+            .setTitle(item.kanji)
             .setDescription("Incorrect!")
             .addFields({
               name: "Meaning",
-              value: user.reviews[randomIndex].values.wk_meanings,
+              value: acceptedAnswers,
             });
           message.reply(embeddedMessage);
           user.markModified("reviews");
@@ -157,23 +180,41 @@ function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
 function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
   let item = user.reviews[randomIndex];
   const embeddedMessage = new Discord.MessageEmbed()
-    .setColor("#fd360b")
     .setTitle(item.kanji)
-    .setDescription("What is the **reading** of the above?")
-    .setFooter("Reading | Level: " + item.values.wk_level);
+    .setDescription("What is the **reading** of the above?");
+  if (item.type === "Kanji") {
+    embeddedMessage
+      .setColor("#f6a0dad")
+      .setFooter(
+        item.type + " | Meaning | " + "Level: " + item.values.wk_level
+      );
+  } else if (item.type === "Vocab") {
+    embeddedMessage
+      .setColor("#29c2ef")
+      .setFooter(
+        item.type + " | Meaning | " + "Level: " + item.values.wk_level
+      );
+  }
   message.reply(embeddedMessage).then((msg) => {
     const msgFilter = (m) =>
       m.content.length > 0 && m.author.id === user.userId;
     msg.channel
       .awaitMessages(msgFilter, { max: 1 })
       .then((collected) => {
-        const response = capitalizeFirstLetter(
-          collected.first().content.trim()
-        );
-        if (
-          item.values.wk_readings_on.includes(response) ||
-          item.values.wk_readings_kun.includes(response)
-        ) {
+        let response;
+        let acceptedAnswer;
+        if (item.type === "Kanji") {
+          //captilizes first letter of response as all kanji meanings are capitalized
+          response = capitalizeFirstLetter(collected.first().content.trim());
+          acceptedAnswer =
+            item.values.wk_readings_on.includes(response) ||
+            item.values.wk_readings_kun.includes(response);
+          //lowercases response as most vocab are in lowercase
+        } else if (item.type === "Vocab") {
+          response = collected.first().content.toLowerCase().trim();
+          acceptedAnswer = item.readings === response;
+        }
+        if (acceptedAnswer) {
           //Meaning complete, one crrect
           item.readingReview = true;
           item.oneCorrect = true;
@@ -222,25 +263,30 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
             item.level -= 1;
           }
           msg.delete();
-          embeddedMessage
-            .setTitle(user.reviews[randomIndex].kanji)
-            .setDescription("Incorrect!")
-            .addFields(
+          embeddedMessage.setTitle(item.kanji).setDescription("Incorrect!");
+          if (item.type === "Kanji") {
+            embeddedMessage.addFields(
               {
                 name: "Kunyomi Readings",
                 value:
-                  user.reviews[randomIndex].values.wk_readings_kun.length === 0
+                  item.values.wk_readings_kun.length === 0
                     ? "None"
-                    : user.reviews[randomIndex].values.wk_readings_kun,
+                    : item.values.wk_readings_kun,
               },
               {
                 name: "Onyomi Readings",
                 value:
-                  user.reviews[randomIndex].values.wk_readings_on.length === 0
+                  item.values.wk_readings_on.length === 0
                     ? "None"
-                    : user.reviews[randomIndex].values.wk_readings_on,
+                    : item.values.wk_readings_on,
               }
             );
+          } else if (item.type === "Vocab") {
+            embeddedMessage.addFields({
+              name: "Readings",
+              value: item.readings,
+            });
+          }
           message.reply(embeddedMessage);
           user.markModified("reviews");
           user.save().then(() => reviewQuestions(message, user, amount));
@@ -254,6 +300,7 @@ function capitalizeFirstLetter(string) {
   return string[0].toUpperCase() + string.slice(1).toLowerCase();
 }
 
+//Checks if the kanji items at the user level have gone to guru1. If all guru1, user may move to next level.
 function levelChecker(user) {
   const userLevel = user.level;
   const levelArray = user.reviewed.map((e) => {
@@ -266,6 +313,16 @@ function levelChecker(user) {
       return false;
     }
   }
+  return true;
+}
+
+//Checks if there are any kanjis in the learning array, if there are, return false.
+function kanjiLearningLength(user) {
+  user.learning.forEach((e) => {
+    if (e.type === "Kanji") {
+      return false;
+    }
+  });
   return true;
 }
 
