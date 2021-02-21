@@ -36,7 +36,7 @@ client.once("ready", () => {
       readingReview: false,
       oneCorrect: false,
       level: 0,
-      type: "kanji"
+      type: "Kanji"
     };
     kanjiArray.push(newKanji);
   });
@@ -52,7 +52,7 @@ client.once("ready", () => {
       reviewDate: new Date(),
       meaningReview: false,
       readingReview: false,
-      type: "vocab"
+      type: "Vocab"
     }
     vocabArray.push(newVocab);
   })
