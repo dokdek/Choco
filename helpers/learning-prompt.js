@@ -36,7 +36,7 @@ function learningEmbed(user, message, counter) {
     const embeddedMessage = new Discord.MessageEmbed().setTitle(user.learning[0].kanji);
     if (user.learning[0].type === "Kanji") {
       embeddedMessage
-      .setColor("#f6a0dad")
+      .setColor("#6a0dad")
         .addFields(
           { name: "Meanings", value: user.learning[0].values.wk_meanings },
           {

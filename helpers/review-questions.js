@@ -82,7 +82,7 @@ function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
   //change embed msg below for vocab
   if (item.type === "Kanji") {
     embeddedMessage
-      .setColor("#f6a0dad")
+      .setColor("#6a0dad")
       .setFooter(
         item.type + " | Meaning | " + "Level: " + item.values.wk_level
       );
@@ -184,7 +184,7 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
     .setDescription("What is the **reading** of the above?");
   if (item.type === "Kanji") {
     embeddedMessage
-      .setColor("#f6a0dad")
+      .setColor("#6a0dad")
       .setFooter(
         item.type + " | Meaning | " + "Level: " + item.values.wk_level
       );
