@@ -34,8 +34,7 @@ const reviewQuestions = (message, user, amount) => {
       .setColor("#fd360b")
       .setTitle(reviewMessage);
     //change below, cannot check length, since sometimes vocab will be there. Extract to new function
-    if (kanjiLearningLength(user) === 0 && levelChecker(user) === true) {
-      //move vocab to learning here.
+    if (kanjiLearningLength(user) === true && levelChecker(user) === true) {
       let hasLearning = true;
       while (hasLearning) {
         if (user.vocabToLearn[0].wk_level === user.level) {
@@ -308,6 +307,7 @@ function levelChecker(user) {
       return e;
     }
   });
+  console.log(levelArray);
   for (let i = 0; i < levelArray.length; i++) {
     if (levelArray[i].level < 5) {
       return false;
