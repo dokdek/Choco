@@ -33,7 +33,7 @@ const reviewQuestions = (message, user, amount) => {
     const embeddedMessage = new Discord.MessageEmbed()
       .setColor("#fd360b")
       .setTitle(reviewMessage);
-    //change below, cannot check length, since sometimes vocab will be there. Extract to new function
+    //Extract to new function
     if (kanjiLearningLength(user) === true && levelChecker(user) === true) {
       let hasLearning = true;
       while (hasLearning) {
@@ -304,11 +304,11 @@ function capitalizeFirstLetter(string) {
 function levelChecker(user) {
   const userLevel = user.level;
   const levelArray = user.reviewed.map((e) => {
-    if (e.values.wk_level === userLevel) {
+    if (e.type === "Kanji" && e.values.wk_level === userLevel) {
+      //console.log(e);
       return e;
     }
   });
-  //console.log(levelArray);
   for (let i = 0; i < levelArray.length; i++) {
     if (levelArray[i].level < 5) {
       return false;
@@ -319,12 +319,13 @@ function levelChecker(user) {
 
 //Checks if there are any kanjis in the learning array, if there are, return false.
 function kanjiLearningLength(user) {
+  let hasKanji = true;
   user.learning.forEach((e) => {
     if (e.type === "Kanji") {
-      return false;
+      hasKanji = false;
     }
   });
-  return true;
+  return hasKanji;
 }
 
 module.exports = reviewQuestions;
