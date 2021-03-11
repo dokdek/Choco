@@ -76,6 +76,25 @@ client.on("message", (message) => {
   if (message.content === "~new") {
     newUser(message, kanjiArray, vocabArray);
   }
+  /*if (message.content === "~test"){
+    console.log("Moving vocabs");
+    User.findOne({userId: message.author.id},(err,user)=>{
+      let hasLearning = true;
+    while (hasLearning) {
+      console.log(user.vocabToLearn[0]);
+      if (user.vocabToLearn[0].wk_level == (user.level)) {
+        console.log("Moving " + user.vocabToLearn[0].kanji);
+        user.learning.push(user.vocabToLearn[0]);
+        user.vocabToLearn.shift();
+      } else {
+        hasLearning = false;
+      }
+    }
+    user.level += 1;
+    user.markModified("vocabToLearn");
+    user.save();
+   }) 
+  }*/
 });
 
 function reviewChecker() {
