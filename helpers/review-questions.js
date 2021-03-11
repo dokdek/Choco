@@ -37,7 +37,7 @@ const reviewQuestions = (message, user, amount) => {
     if (kanjiLearningLength(user) === true && levelChecker(user) === true) {
       let hasLearning = true;
       while (hasLearning) {
-        if (user.vocabToLearn[0].wk_level === user.level) {
+        if (user.vocabToLearn[0].wk_level == user.level) {
           user.learning.push(user.vocabToLearn[0]);
           user.vocabToLearn.shift();
         } else {
@@ -49,6 +49,7 @@ const reviewQuestions = (message, user, amount) => {
       embeddedMessage
         .setTitle("Level up!")
         .setDescription("You are now on level " + user.level);
+      user.markModified("vocabToLearn");
       user.save();
     }
     message.reply(embeddedMessage);
@@ -185,13 +186,13 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
     embeddedMessage
       .setColor("#6a0dad")
       .setFooter(
-        item.type + " | Meaning | " + "Level: " + item.values.wk_level
+        item.type + " | Reading | " + "Level: " + item.values.wk_level
       );
   } else if (item.type === "Vocab") {
     embeddedMessage
       .setColor("#29c2ef")
       .setFooter(
-        item.type + " | Meaning | " + "Level: " + item.values.wk_level
+        item.type + " | Reading | " + "Level: " + item.values.wk_level
       );
   }
   message.reply(embeddedMessage).then((msg) => {
@@ -220,7 +221,7 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
           msg.delete();
           embeddedMessage
             .setTitle("Correct!")
-            .setDescription("")
+            .setDescription(item.kanji)
             .setColor("#00FF00");
           if (levelIncrease) {
             item.level += 1;
@@ -279,12 +280,12 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
                     ? "None"
                     : item.values.wk_readings_on,
               }
-            );
+            ).setFooter("");
           } else if (item.type === "Vocab") {
             embeddedMessage.addFields({
               name: "Readings",
               value: item.readings,
-            });
+            }).setFooter("");
           }
           message.reply(embeddedMessage);
           user.markModified("reviews");
@@ -307,7 +308,7 @@ function levelChecker(user) {
       return e;
     }
   });
-  console.log(levelArray);
+  //console.log(levelArray);
   for (let i = 0; i < levelArray.length; i++) {
     if (levelArray[i].level < 5) {
       return false;
