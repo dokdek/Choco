@@ -3,7 +3,7 @@ A Discord bot made for learning Japanese kanji/vocabulary via SRS.
 
 Implements a spaced repetition system of studying to assist users in learning over 6000 vocabularly and kanji. Implements Wanikani levels and algorithm.
 
-# Usage
+## Usage
 Invite Choco to a server [here](https://discord.com/api/oauth2/authorize?client_id=803097728917700630&permissions=0&scope=bot).
 
 DM the bot a command to get started, Choco will only work in DMs, but you must have a shared server for bots to be able to DM you.
