@@ -8,6 +8,8 @@ Invite Choco to a server [here](https://discord.com/api/oauth2/authorize?client_
 
 DM the bot a command to get started, Choco will only work in DMs, but you must have a shared server for bots to be able to DM you.
 
+Choco also has a companion site as an alternative way to interface with Choco [here](https://choco-olive.vercel.app/) (NOTE: Site is currently under development and non-functional)
+
 ## Commands
 ```
 ~help
