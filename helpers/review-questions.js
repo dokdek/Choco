@@ -26,7 +26,7 @@ const levelNames = [
 
 const reviewQuestions = (message, user, amount) => {
   if (amount === 0) {
-    const reviewMessage = user.reviews.length + " reviews left.";
+    let reviewMessage = user.reviews.length + " reviews left.";
     if (user.reviews.length === 1) {
       reviewMessage = "1 review left.";
     }
