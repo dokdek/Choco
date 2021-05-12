@@ -90,7 +90,7 @@ function meaningEmbed(message, user, randomIndex, amount, levelIncrease) {
     embeddedMessage
       .setColor("#29c2ef")
       .setFooter(
-        item.type + " | Meaning | " + "Level: " + item.values.wk_level
+        item.type + " | Meaning | " + "Level: " + item.wk_level
       );
   }
   message.reply(embeddedMessage).then((msg) => {
@@ -192,7 +192,7 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
     embeddedMessage
       .setColor("#29c2ef")
       .setFooter(
-        item.type + " | Reading | " + "Level: " + item.values.wk_level
+        item.type + " | Reading | " + "Level: " + item.wk_level
       );
   }
   message.reply(embeddedMessage).then((msg) => {
@@ -297,7 +297,9 @@ function reviewEmbed(message, user, randomIndex, amount, levelIncrease) {
 }
 
 function capitalizeFirstLetter(string) {
-  return string[0].toUpperCase() + string.slice(1).toLowerCase();
+  const stringArray =  string.toLowerCase().trim().split(' ');
+  const capitalizedArray = stringArray.map((str)=>{return str[0].toUpperCase().concat(str.slice(1))});
+  return capitalizedArray.join(' ');
 }
 
 //Checks if the kanji items at the user level have gone to guru1. If all guru1, user may move to next level.
