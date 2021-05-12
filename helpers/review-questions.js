@@ -305,9 +305,8 @@ function capitalizeFirstLetter(string) {
 //Checks if the kanji items at the user level have gone to guru1. If all guru1, user may move to next level.
 function levelChecker(user) {
   const userLevel = user.level;
-  const levelArray = user.reviewed.map((e) => {
+  const levelArray = user.reviewed.filter((e) => {
     if (e.type === "Kanji" && e.values.wk_level === userLevel) {
-      //console.log(e);
       return e;
     }
   });
