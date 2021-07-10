@@ -1,6 +1,8 @@
 const Discord = require("discord.js");
 const mongoose = require("mongoose");
 const User = require("./models/user.model");
+const Vocab = require("./models/vocab.model");
+const Kanji = require("./models/kanji.model");
 const helpMessage = require("./commands/help");
 const kanjiJSON = require("./kanji.json");
 const learn = require("./commands/learn");
@@ -76,25 +78,9 @@ client.on("message", (message) => {
   if (message.content === "~new") {
     newUser(message, kanjiArray, vocabArray);
   }
-  /*if (message.content === "~test"){
-    console.log("Moving vocabs");
-    User.findOne({userId: message.author.id},(err,user)=>{
-      let hasLearning = true;
-    while (hasLearning) {
-      console.log(user.vocabToLearn[0]);
-      if (user.vocabToLearn[0].wk_level == (user.level)) {
-        console.log("Moving " + user.vocabToLearn[0].kanji);
-        user.learning.push(user.vocabToLearn[0]);
-        user.vocabToLearn.shift();
-      } else {
-        hasLearning = false;
-      }
-    }
-    user.level += 1;
-    user.markModified("vocabToLearn");
-    user.save();
-   }) 
-  }*/
+  if (message.content === "~dev"){
+    mover();
+  }
 });
 
 function reviewChecker() {
@@ -147,20 +133,37 @@ function reviewChecker() {
 }
 
 function mover(){
-  console.log("moving back to reviewed");
-  User.find({},(err, users)=>{
+  User.find({userId: "WebMock"},(err, users)=>{
     if (err) {
-      console.log("Error in reviewChecker");
+      console.log("Cannot find user");
     } else {
       users.forEach((user) => {
-        const temp = user.reviews;
-        user.reviewed = temp.concat(user.reviewed);
-        user.reviews = [];
-        user.markModified("reviews");
+        let hasLearning = true;
+        while (hasLearning) {
+          if (user.vocabToLearn[0].wk_level == 1) {
+            user.learning.push(user.vocabToLearn[0]);
+            user.vocabToLearn.shift();
+          } else {
+            hasLearning = false;
+          }
+        }
+        user.markModified("learning");
         user.save();
+        console.log("Saved");
       });
     }
   })
+}
+
+function init(){
+  const newUser = new User({
+    userId: "WebMock",
+    level: 1,
+    toLearn: kanjiArray,
+    vocabToLearn: vocabArray,
+  });
+  newUser
+    .save();
 }
 
 client.login(process.env.TOKEN);

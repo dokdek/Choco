@@ -310,6 +310,9 @@ function levelChecker(user) {
       return e;
     }
   });
+  if(levelArray.length == 0){
+    return false;
+  }
   for (let i = 0; i < levelArray.length; i++) {
     if (levelArray[i].level < 5) {
       return false;
